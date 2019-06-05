@@ -73,7 +73,7 @@ def get_replied_comments():
 
 comments_replied_to = get_replied_comments()
 
-
+# While loop to continuosly run the run_bot function
 while True:
     print("\n", datetime.now())
     run_bot(bot_login(), comments_replied_to)
