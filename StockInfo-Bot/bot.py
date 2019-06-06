@@ -8,11 +8,12 @@ import config
 # Importing pandas for data manipulation
 import pandas as pd
 
-# Import requests library for HTTP requests
+# Importing requests library for HTTP requests
 import requests
 
-# Importing datetime library for debugging
+# Importing datetime library for debugging and time library for displaying time
 from datetime import datetime
+import time
 
 # Importing OS library to read/write files
 import os
@@ -35,7 +36,6 @@ def bot_login():
     
     return bot_login_info
 
-
 # Creating function to run bot and reply to comments
 def run_bot(bot_login_info, comments_replied_to):
     
@@ -50,15 +50,21 @@ def run_bot(bot_login_info, comments_replied_to):
                 url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={}&apikey={}".format(symbol, config.av_apikey)
                 data = pd.DataFrame(requests.get(url).json()['Time Series (Daily)']).T
                 price = data['4. close'][0]
+                company_name = nasdaq.loc[nasdaq['Symbol'] == symbol, 'Company Name'].iloc[0]
                 
-                print("The last closing price for {} was {}".format(stock_comment, price))
-                print("Replied to comment {}".format(comment.id))
                 comments_replied_to.append(comment.id)
                 
                 with open ("replied_comments.txt", "a") as f:
                     f.write(comment.id + "\n")
+                    
+                stock_info = "The last price for {} (Nasdaq:*{}*) was **${:.2f}**".format(company_name, symbol, float(price))
+                time_info = " (as of {})".format(time.strftime("%I:%M%p on %b %d, %Y"))
+                bot_info = "\n\n ^^I ^^am ^^a ^^new ^^bot ^^and ^^I'm ^^still ^^improving, ^^you ^^can ^^provide ^^feedback ^^by ^^DMing ^^me ^^your ^^suggestions!"
                 
-                comment.reply("The last closing price for {} was ${}".format(symbol, price))
+                comment.reply(stock_info + time_info + bot_info)
+                
+                print("Replied to comment {}".format(comment.id))
+                print(stock_info + time_info)
                 
 # Creating comment saving function
 def get_replied_comments():
@@ -71,6 +77,7 @@ def get_replied_comments():
     
     return replied_comments
 
+# Assigning a variable to the get_replied_comments() function
 comments_replied_to = get_replied_comments()
 
 # While loop to continuosly run the run_bot function
