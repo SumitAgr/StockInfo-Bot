@@ -48,10 +48,16 @@ def run_bot(bot_login_info, comments_replied_to):
             if stock_comment in comment.body and comment.id not in comments_replied_to and comment.author != config.username :
                 
                 # Defining the url to get data from and creating a DataFrame and then extracting price and company name
-                url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={}&apikey={}".format(symbol, config.av_apikey)
-                data = pd.DataFrame(requests.get(url).json()['Time Series (Daily)']).T
+                av_url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={}&apikey={}".format(symbol, config.av_apikey)
+                data = pd.DataFrame(requests.get(av_url).json()['Time Series (Daily)']).T
                 price = data['4. close'][0]
                 company_name = nasdaq.loc[nasdaq['Symbol'] == symbol, 'Company Name'].iloc[0]
+                
+                bc_url = "https://marketdata.websol.barchart.com/getQuote.csv?apikey={}&symbols={}&fields=fiftyTwoWkHigh%2CfiftyTwoWkHighDate%2CfiftyTwoWkLow%2CfiftyTwoWkLowDate".format(config.bc_apikey, symbol)
+                bc_df = pd.read_csv(bc_url)
+                
+                fiftyTwoWkLow = bc_df["fiftyTwoWkLow"].iloc[0]
+                fiftyTwoWkHigh = bc_df["fiftyTwoWkHigh"].iloc[0]
                
                 # Appending comment.id to the txt file
                 comments_replied_to.append(comment.id)
@@ -62,19 +68,20 @@ def run_bot(bot_login_info, comments_replied_to):
                 
                 # Defining the variables to show in our comment reply
                 stock_info = "The last price for {} (Nasdaq:*{}*) was **${:.2f}**".format(company_name, symbol, float(price))
+                high_low_info = "\n\n The 52 week high is **${}** and 52 week low is **${}**".format(fiftyTwoWkHigh, fiftyTwoWkLow)
                 time_info = " (as of {})".format(time.strftime("%I:%M%p on %b %d, %Y"))
                 bot_info = "\n\n ^^I ^^am ^^a ^^new ^^bot ^^and ^^I'm ^^still ^^improving, ^^you ^^can ^^provide ^^feedback ^^by ^^DMing ^^me ^^your ^^suggestions!"
                 
                 # Replying to the comment on reddit
-                comment.reply(stock_info + time_info + bot_info)
+                comment.reply(stock_info + time_info + high_low_info + bot_info)
                 
                 # Print statements for debugging
                 print("Replied to comment {}".format(comment.id))
-                print(stock_info + time_info)
+                print(stock_info + time_info + high_low_info)
                 
-                # Sleeping for 12 seconds to limit 5 API Calls per minute
-                print("Sleeping for 12 seconds...")
-                time.sleep(12)
+                # Sleeping for 15 seconds to limit 5 API Calls per minute
+                print("Sleeping for 15 seconds...")
+                time.sleep(15)
                 
 # Creating comment saving function
 def get_replied_comments():
