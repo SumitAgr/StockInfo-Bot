@@ -25,7 +25,7 @@
 + [Usage](#usage)
 + [Example](#example)
 + [Built Using](#built_using)
-+ [Authors](#authors)
++ [Author](#author)
 + [License](#license)
 + [Acknowledgments](#acknowledgement)
 
@@ -68,10 +68,10 @@ The bot will then swiftly reply.
 + [Barchart API](https://www.barchart.com/ondemand/api/getQuote) - Barchart's financial data API
 + Pandas - Library for data manipulation and analysis
 + Requests - Library for HTTP requests
-+ Time / DateTime - Time libaries for time usage
++ Time / DateTime / PyTZ - Time libraries for time usage
 + OS - Library to read/write files
 
-## ✍️ Authors <a name = "authors"></a>
+## ✍️ Author <a name = "author"></a>
 + Sumit Agrawal
 
 ## 📗 License <a name = "license"></a>
