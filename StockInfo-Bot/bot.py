@@ -54,22 +54,38 @@ def run_bot(bot_login_info, comments_replied_to):
             if stock_comment in comment.body and comment.id not in comments_replied_to and comment.author != config.username :
                 
                 # Defining the url to get data from and creating a DataFrame and then extracting price and company name
-                try:
-                    av_url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={}&apikey={}".format(symbol, config.av_apikey)
-                    data = pd.DataFrame(requests.get(av_url).json()['Time Series (Daily)']).T
-                    price = data['4. close'][0]
-                except:
-                    print("Too many API Calls! Sleeping for a minute")
-                    time.sleep(60)
-                    pass
+                valid_av_data = False
+                
+                while not valid_av_data:
+                    try:
+                        av_url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={}&apikey={}".format(symbol, config.av_apikey)
+                        data = pd.DataFrame(requests.get(av_url).json()['Time Series (Daily)']).T
+                        price = data['4. close'][0]
+                        valid_av_data = True
+                        
+                        if valid_av_data == True:
+                            continue
+                    except:
+                        print("Too many API Calls! Sleeping for a minute")
+                        time.sleep(60)
                 
                 company_name = nasdaq.loc[nasdaq['Symbol'] == symbol, 'Company Name'].iloc[0]
                 
-                bc_url = "https://marketdata.websol.barchart.com/getQuote.csv?apikey={}&symbols={}&fields=fiftyTwoWkHigh%2CfiftyTwoWkHighDate%2CfiftyTwoWkLow%2CfiftyTwoWkLowDate".format(config.bc_apikey, symbol)
-                bc_df = pd.read_csv(bc_url)
+                valid_bc_data = False
                 
-                fiftyTwoWkLow = bc_df["fiftyTwoWkLow"].iloc[0]
-                fiftyTwoWkHigh = bc_df["fiftyTwoWkHigh"].iloc[0]
+                while not valid_bc_data:
+                    try:
+                        bc_url = "https://marketdata.websol.barchart.com/getQuote.csv?apikey={}&symbols={}&fields=fiftyTwoWkHigh%2CfiftyTwoWkHighDate%2CfiftyTwoWkLow%2CfiftyTwoWkLowDate".format(config.bc_apikey, symbol)
+                        bc_df = pd.read_csv(bc_url)
+                        fiftyTwoWkLow = bc_df["fiftyTwoWkLow"].iloc[0]
+                        fiftyTwoWkHigh = bc_df["fiftyTwoWkHigh"].iloc[0]
+                        valid_bc_data = True
+                        
+                        if valid_bc_data == True:
+                            continue
+                    except:
+                        print("Too many API Calls! Sleeping for a minute")
+                        time.sleep(60)
                
                 # Appending comment.id to the txt file
                 comments_replied_to.append(comment.id)
