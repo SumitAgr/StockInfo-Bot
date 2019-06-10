@@ -42,7 +42,7 @@ The bot first connects to reddit by logging in with the login credentials and re
 
 The bot searches for the ticker symbol in the Pandas Dataframe (converted from a csv file) and then returns the stock ticker and the corresponding name of the company. It then uses Alpha Vantage's realtime API to get that information and returns the last closing price. It also uses Barchart's API (delayed by 15 minutes) to return the stock's 52 week high and low prices. After getting all the information necessary to reply to the original user, Stock Info Bot replies to the comment in under a minute.
 
-The entire bot is written in Python 3.6
+The entire bot is written in Python 3.7
 
 ## 🖋️ Usage <a name = "usage"></a>
 
