@@ -15,7 +15,7 @@
 
 ---
 
-<p align="center"> 🤖 A reddit bot that displays the last closing price information of a stock. Simply enter $(stock ticker) and the bot will reply to you with the name of the company, closing price, 52 week high and low prices.
+<p align="center"> 🤖 A reddit bot that displays the last closing price information of a stock. Simply enter: $(stock ticker) and the bot will reply to you with the name of the company, closing price, 52 week high and low prices.
     <br> 
 </p>
 
@@ -40,7 +40,7 @@ The bot is running on Ubuntu which is hosted on Amazon's AWS EC2.
 
 The bot first connects to reddit by logging in with the login credentials and reddit's client id and client secret. After successfully authenticating the bot, it scans all of reddit's comments to search for the keyword $(stock ticker) and whenever it finds it, it triggers the bot to reply. 
 
-The bot searches for the ticker symbol in the Pandas Dataframe (converted from a csv file) and then returns the stock ticker and the corresponding name of the company. It then uses Alpha Vantage's realtime API to get that information and returns the last closing price. It also uses Barchart's API (delayed by 15 minutes) to return the stock's 52 week high and low prices. After getting all the information necessary to reply to the original user, Stock Info Bot replies to the comment in under a minute.
+The bot searches for the ticker symbol in the Pandas Dataframe (converted from a csv file) and then returns the stock ticker and the corresponding name of the company. It then uses Alpha Vantage's realtime API to get closing price information and returns the last closing price. It also uses Barchart's API (delayed by 15 minutes) to return the stock's 52 week high and low prices. After getting all the information necessary to reply to the original user, Stock Info Bot replies to the comment in under a minute.
 
 The entire bot is written in Python 3.7
 
@@ -78,5 +78,5 @@ The bot will then swiftly reply.
 This project is licensed under the MIT License - see the LICENSE file for more details.
 
 ## 🎉 Acknowledgements <a name = "acknowledgement"></a>
-+ Thank you to [Datahub](https://datahub.io/core/nasdaq-listings) for providing the NASDAQ listing data in a clean, readable format
++ Thank you to [Datahub](https://datahub.io/core/nasdaq-listings) for providing the NASDAQ listing data in a clean, readable format.
 + A big thank you to all the developers of the python libraries used in this bot, it wouldn't be possible without them.
