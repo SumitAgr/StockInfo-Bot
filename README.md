@@ -30,7 +30,7 @@
 + [Acknowledgments](#acknowledgement)
 
 ## 🧐 About <a name = "about"></a>
-A convenient bot that displays a snippet of a stock by showing the full name of the company, last closing price (latest) and the 52 week high and 52 week low price of the bot. 
+A convenient bot that displays a snippet of a stock by showing the full name of the company, last closing price (latest) and the 52 week high and 52 week low price. 
 
 Stock Info Bot uses the Alpha Vantage API for the closing price and Barchart API for 52 week prices. 
 
