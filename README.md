@@ -48,7 +48,7 @@ The entire bot is written in Python 3.7
 
 To use the bot, type the following in a reddit comment box:
 ```
-> $SBUX
+> $QCOM
 ```
 There has to be a $ in front of the stock ticker, otherwise it will not work.
 
@@ -58,7 +58,7 @@ The bot will then swiftly reply.
 
 <p align="center">
   <a href="" rel="noopener">
- <img src="https://i.imgur.com/imGH3qP.png" alt="Bot example for $SBUX"></a>
+ <img src="https://i.imgur.com/sGYMAW6.png" alt="Bot example for $QCOM"></a>
 </p>
 
 ## ⛏️ Built Using <a name = "built_using"></a>
@@ -66,9 +66,9 @@ The bot will then swiftly reply.
 + [Amazon AWS EC2](https://aws.amazon.com/ec2/) - Amazon AWS's cloud computing service
 + [Alpha Vantage API](https://www.alphavantage.co/) - Alpha Vantage's realtime API
 + [Barchart API](https://www.barchart.com/ondemand/api/getQuote) - Barchart's financial data API
-+ Pandas - Library for data manipulation and analysis
++ [Pandas](https://pandas.pydata.org/) - Library for data manipulation and analysis
 + Requests - Library for HTTP requests
-+ Time / DateTime / PyTZ - Time libraries for time usage
++ Time / DateTime / TimeDelta / PyTZ - Time libraries for time usage
 + OS - Library to read/write files
 
 ## ✍️ Author <a name = "author"></a>
