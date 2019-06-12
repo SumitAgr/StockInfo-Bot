@@ -30,6 +30,11 @@ nasdaq = pd.read_csv('nasdaq-listed-symbols.csv')
 # Assigning a variable to the Symbol column in the DataFrame
 nasdaq_list = nasdaq.Symbol.values
 
+subreddits = 'wallstreetbets+investing+SecurityAnalysis+InvestmentClub+RobinHood+StockMarket+Stock_Picks+Forex+options+stocks\
+              +pennystocks+finance+algotrading+CFA+1kRobinHoodProject+tastytrade+bitcoinhistory+ValueInvesting+Shorting+\
+              forexbets+FinancialCareers+optionstrading+quant+TradingEducation+daytraders+ONCS+digitalcoin+passiveincome+\
+              foreignpolicyanalysis+SHMPstreetbets+AMD_Stock+thewallstreet+RobinHoodPennyStocks'
+
 # Creating login function for PRAW
 def bot_login():
     bot_login_info = praw.Reddit(username = config.username,
@@ -56,50 +61,49 @@ def run_bot(bot_login_info, comments_replied_to):
                 # Defining the url to get data from and creating a DataFrame and then extracting price and company name
                 valid_av_data = False
                 
+                # While loop to get Alpha Vantage data until there's no error
                 while not valid_av_data:
                     try:
-                        av_url_daily = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={}&apikey={}".format(symbol, config.av_apikey)
-                        av_url_daily_data = pd.DataFrame(requests.get(av_url_daily).json()['Time Series (Daily)']).T
-                        price = av_url_daily_data['4. close'][0]
+                        daily = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={}&apikey={}".format(symbol, config.av_apikey)
+                        daily_data = pd.DataFrame(requests.get(daily).json()['Time Series (Daily)']).T
+                        price = daily_data['4. close'][0]
                         
-                        #time.sleep(5)
+                        weekly = "https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol={}&apikey={}".format(symbol, config.av_apikey)
+                        weekly_data = pd.DataFrame(requests.get(weekly).json()['Weekly Time Series']).T
+                        weekly_data_high = weekly_data['2. high'][1]
+                        weekly_data_low = weekly_data['3. low'][1]
                         
-                        av_url_weekly = "https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol={}&apikey={}".format(symbol, config.av_apikey)
-                        av_url_weekly_data = pd.DataFrame(requests.get(av_url_weekly).json()['Weekly Time Series']).T
-                        weekly_high = av_url_weekly_data['2. high'][1]
-                        weekly_low = av_url_weekly_data['3. low'][1]
-                        
-                        #time.sleep(5)
-                        
-                        av_url_monthly = "https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol={}&apikey={}".format(symbol, config.av_apikey)
-                        av_url_monthly_data = pd.DataFrame(requests.get(av_url_monthly).json()['Monthly Time Series']).T
-                        monthly_high = av_url_monthly_data['2. high'][1]
-                        monthly_low = av_url_monthly_data['3. low'][1]
+                        monthly = "https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol={}&apikey={}".format(symbol, config.av_apikey)
+                        monthly_data = pd.DataFrame(requests.get(monthly).json()['Monthly Time Series']).T
+                        monthly_data_high = monthly_data['2. high'][1]
+                        monthly_data_low = monthly_data['3. low'][1]
                         
                         valid_av_data = True
                         
                         if valid_av_data:
                             continue
                     except:
-                        print("Too many API Calls! Sleeping for a minute")
+                        print("Too many Alpha Vantage API Calls! Sleeping for a minute")
                         time.sleep(60)
                 
+                # Gettin company name data from the DataFrame
                 company_name = nasdaq.loc[nasdaq['Symbol'] == symbol, 'Company Name'].iloc[0]
                 
                 valid_bc_data = False
                 
+                # While loop to get barchart data until there's no error
                 while not valid_bc_data:
                     try:
                         bc_url = "https://marketdata.websol.barchart.com/getQuote.csv?apikey={}&symbols={}&fields=fiftyTwoWkHigh%2CfiftyTwoWkHighDate%2CfiftyTwoWkLow%2CfiftyTwoWkLowDate".format(config.bc_apikey, symbol)
                         bc_df = pd.read_csv(bc_url)
-                        fiftyTwoWkLow = bc_df["fiftyTwoWkLow"].iloc[0]
-                        fiftyTwoWkHigh = bc_df["fiftyTwoWkHigh"].iloc[0]
+                        fiftytwo_wk_low = bc_df["fiftyTwoWkLow"].iloc[0]
+                        fiftytwo_wk_high = bc_df["fiftyTwoWkHigh"].iloc[0]
                         valid_bc_data = True
                         
                         if valid_bc_data:
                             continue
                     except:
-                        print("Too many API Calls! Sleeping for a minute")
+                        print("Too many Barchart API Calls! Sleeping for a minute")
                         time.sleep(60)
                
                 # Appending comment.id to the txt file
@@ -109,20 +113,23 @@ def run_bot(bot_login_info, comments_replied_to):
                 with open ("replied_comments.txt", "a") as f:
                     f.write(comment.id + "\n")
                     
+                # Declaring US/Eastern timezone
                 est_time = datetime.now(est_timezone)
                 
+                # Logic to get last month's name
                 last_month_name = (pd.Period(datetime.now(), 'M') - 1).strftime('%B %Y')
                 
+                # Logic to get last friday's date
                 now = datetime.now()
                 closest_friday = now + timedelta(days = (4 - now.weekday()))
                 last_friday = closest_friday if closest_friday < now else closest_friday - timedelta(days = 7)
                 
                 # Defining the variables to show in our comment reply
                 stock_info = "The last price for {} (Nasdaq: {}) was **${:.2f}**".format(company_name, symbol, float(price))
-                high_low_info = "\n\n The 52 week high is **${}** and 52 week low is **${}**".format(fiftyTwoWkHigh, fiftyTwoWkLow)
+                high_low_info = "\n\n The 52 week high is **${}** and 52 week low is **${}**".format(fiftytwo_wk_high, fiftytwo_wk_low)
                 price_action_info = "\n\n Price action (weekly and monthly):"
-                weekly_info = "\n\n **Weekly:** {} made a weekly high of **${:.2f}** and a low of **${:.2f}** (for the week ending on {})".format(symbol, float(weekly_high), float(weekly_low), last_friday.strftime("%b %d, %Y"))
-                monthly_info = "\n\n **Monthly:** {} made a monthly high of **${:.2f}** and a low of **${:.2f}** (for the month of {})".format(symbol, float(monthly_high), float(monthly_low), last_month_name)
+                weekly_info = "\n\n **Weekly:** {} made a weekly high of **${:.2f}** and a low of **${:.2f}** (for the week ending on {})".format(symbol, float(weekly_data_high), float(weekly_data_low), last_friday.strftime("%b %d, %Y"))
+                monthly_info = "\n\n **Monthly:** {} made a monthly high of **${:.2f}** and a low of **${:.2f}** (for the month of {})".format(symbol, float(monthly_data_high), float(monthly_data_low), last_month_name)
                 time_info = " (as of {})".format(est_time.strftime("%I:%M %p EST on %b %d, %Y"))
                 bot_info = "\n\n ^^I ^^am ^^a ^^new ^^bot ^^and ^^I'm ^^still ^^improving, ^^you ^^can ^^provide ^^feedback ^^by ^^DMing ^^me ^^your ^^suggestions!"
                 
@@ -130,11 +137,12 @@ def run_bot(bot_login_info, comments_replied_to):
                 comment.reply(stock_info + time_info + high_low_info + price_action_info + weekly_info + monthly_info + bot_info)
                 
                 # Print statements for debugging
-                print("Replied to comment {}".format(comment.id))
+                print("Replied to author {} and comment {}".format(comment.author, comment.id))
                 print(stock_info + time_info + high_low_info)
+                print("Full path - {}".format(comment.permalink))
                 
                 # Sleeping for 60 seconds to limit 5 API Calls per minute
-                print("Sleeping for 60 seconds...")
+                print("Sleeping for 60 seconds to limit 5 API Calls per minute...")
                 time.sleep(60)
                 
 # Creating comment saving function
@@ -164,5 +172,5 @@ while True:
         print("PRAW 403 HTTP RESPONSE occured! Sleeping for 10 minutes")
         time.sleep(600)
     except prawcore.ResponseException:
-        print("PRAW 503 HTTP REsponse! SLeeping for 10 minutes")
+        print("PRAW 503 HTTP REsponse! SLeeping for a minute...")
         time.sleep(60)
