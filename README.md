@@ -15,7 +15,7 @@
 
 ---
 
-<p align="center"> 🤖 A reddit bot that displays the last closing price information of a stock. Simply enter: $(stock ticker) and the bot will reply to you with the name of the company, closing price, 52 week high and low prices.
+<p align="center"> 🤖 A reddit bot that displays the last closing price information of a stock. Simply enter: $(stock ticker) and the bot will reply to you with the name of the company, closing price, 52 week high and low prices, weekly high and low and monthly high low prices.
     <br> 
 </p>
 
@@ -30,17 +30,17 @@
 + [Acknowledgments](#acknowledgement)
 
 ## 🧐 About <a name = "about"></a>
-A convenient bot that displays a snippet of a stock by showing the full name of the company, last closing price (latest) and the 52 week high and 52 week low price. 
+A convenient bot that displays a snippet of a stock by showing the full name of the company, last closing price (latest) and the 52 week high and 52 week low price, weekly high and low, monthly high and low prices.
 
-Stock Info Bot uses the Alpha Vantage API for the closing price and Barchart API for 52 week prices. 
+Stock Info Bot uses the Alpha Vantage API for the closing price, weekly and monthly prices and Barchart API for 52 week prices. 
 
-The bot is running on Ubuntu which is hosted on Amazon's AWS EC2.
+The bot is running on Ubuntu 16.04 which is hosted on Amazon's AWS EC2.
 
 ## 💭 How it works <a name = "howitworks"></a>
 
 The bot first connects to reddit by logging in with the login credentials and reddit's client id and client secret. After successfully authenticating the bot, it scans all of reddit's comments to search for the keyword $(stock ticker) and whenever it finds it, it triggers the bot to reply. 
 
-The bot searches for the ticker symbol in the Pandas Dataframe (converted from a csv file) and then returns the stock ticker and the corresponding name of the company. It then uses Alpha Vantage's realtime API to get closing price information and returns the last closing price. It also uses Barchart's API (delayed by 15 minutes) to return the stock's 52 week high and low prices. After getting all the information necessary to reply to the original user, Stock Info Bot replies to the comment in under a minute.
+The bot searches for the ticker symbol in the Pandas Dataframe (converted from a csv file) and then returns the stock ticker and the corresponding name of the company. It then uses Alpha Vantage's realtime API to get closing price information and returns the last closing price and weekly and monthly prices. It also uses Barchart's API (delayed by 15 minutes) to return the stock's 52 week high and low prices. After getting all the information necessary to reply to the original user, Stock Info Bot replies to the comment in under a minute.
 
 The entire bot is written in Python 3.7
 
@@ -79,4 +79,4 @@ This project is licensed under the MIT License - see the LICENSE file for more d
 
 ## 🎉 Acknowledgements <a name = "acknowledgement"></a>
 + Thank you to [Datahub](https://datahub.io/core/nasdaq-listings) for providing the NASDAQ listing data in a clean, readable format.
-+ A big thank you to all the developers of the python libraries used in this bot, it wouldn't be possible without them.
++ A big thank you to all the developers of the python libraries used in this bot.
