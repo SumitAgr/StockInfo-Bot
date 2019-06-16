@@ -34,6 +34,9 @@ subreddits = 'wallstreetbets+investing+SecurityAnalysis+InvestmentClub+RobinHood
               +pennystocks+finance+algotrading+CFA+1kRobinHoodProject+tastytrade+bitcoinhistory+ValueInvesting+Shorting+\
               forexbets+FinancialCareers+optionstrading+quant+TradingEducation+daytraders+ONCS+digitalcoin+passiveincome+\
               foreignpolicyanalysis+SHMPstreetbets+AMD_Stock+thewallstreet+RobinHoodPennyStocks'
+             
+ignored_subreddits = ["wallstreetbets", "personalfinance", "weedstocks", "resumes", "sysadmin", "DestinyTheGame", "PowerShell",\
+                      "RealTesla"]
 
 # Creating login function for PRAW
 def bot_login():
@@ -56,7 +59,7 @@ def run_bot(bot_login_info, comments_replied_to):
         
         for symbol in nasdaq_list:
             stock_comment = '${}'.format(symbol)
-            if stock_comment in comment.body and comment.id not in comments_replied_to and comment.author != config.username :
+            if stock_comment in comment.body and comment.id not in comments_replied_to and comment.author != config.username and comment.subreddit not in ignored_subreddits:
                 
                 # Defining the url to get data from and creating a DataFrame and then extracting price and company name
                 valid_av_data = False
