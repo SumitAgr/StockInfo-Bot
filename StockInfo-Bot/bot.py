@@ -46,7 +46,7 @@ def bot_login():
                 client_secret = config.client_secret,
                 user_agent = config.user_agent)
     
-    print("Successfully logged in the bot as {}".format(bot_login_info.user.me()))
+    print(f"Successfully logged in the bot as {bot_login_info.user.me()}")
     
     return bot_login_info
 
@@ -55,10 +55,10 @@ def run_bot(bot_login_info, comments_replied_to):
     
     print("Running the bot and getting the latest comments...")
     
-    for comment in bot_login_info.subreddit('all').comments(limit = None):
+    for comment in bot_login_info.subreddit('testingtesttesting').comments(limit = None):
         
         for symbol in nasdaq_list:
-            stock_comment = '${}'.format(symbol)
+            stock_comment = f"${symbol}"
             if stock_comment in comment.body and comment.id not in comments_replied_to and comment.author != config.username and comment.subreddit not in ignored_subreddits:
                 
                 # Defining the url to get data from and creating a DataFrame and then extracting price and company name
@@ -67,16 +67,16 @@ def run_bot(bot_login_info, comments_replied_to):
                 # While loop to get Alpha Vantage data until there's no error
                 while not valid_av_data:
                     try:
-                        daily = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={}&apikey={}".format(symbol, config.av_apikey)
+                        daily = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={config.av_apikey}"
                         daily_data = pd.DataFrame(requests.get(daily).json()['Time Series (Daily)']).T
                         price = daily_data['4. close'][0]
                         
-                        weekly = "https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol={}&apikey={}".format(symbol, config.av_apikey)
+                        weekly = f"https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol={symbol}&apikey={config.av_apikey}"
                         weekly_data = pd.DataFrame(requests.get(weekly).json()['Weekly Time Series']).T
                         weekly_data_high = weekly_data['2. high'][1]
                         weekly_data_low = weekly_data['3. low'][1]
                         
-                        monthly = "https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol={}&apikey={}".format(symbol, config.av_apikey)
+                        monthly = f"https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol={symbol}&apikey={config.av_apikey}"
                         monthly_data = pd.DataFrame(requests.get(monthly).json()['Monthly Time Series']).T
                         monthly_data_high = monthly_data['2. high'][1]
                         monthly_data_low = monthly_data['3. low'][1]
@@ -86,8 +86,8 @@ def run_bot(bot_login_info, comments_replied_to):
                         if valid_av_data:
                             continue
                     except:
-                        print("Too many Alpha Vantage API Calls! Sleeping for a minute")
-                        time.sleep(60)
+                        print("Too many Alpha Vantage API Calls! Sleeping for two minutes")
+                        time.sleep(120)
                 
                 # Gettin company name data from the DataFrame
                 company_name = nasdaq.loc[nasdaq['Symbol'] == symbol, 'Company Name'].iloc[0]
@@ -97,7 +97,7 @@ def run_bot(bot_login_info, comments_replied_to):
                 # While loop to get barchart data until there's no error
                 while not valid_bc_data:
                     try:
-                        bc_url = "https://marketdata.websol.barchart.com/getQuote.csv?apikey={}&symbols={}&fields=fiftyTwoWkHigh%2CfiftyTwoWkHighDate%2CfiftyTwoWkLow%2CfiftyTwoWkLowDate".format(config.bc_apikey, symbol)
+                        bc_url = f"https://marketdata.websol.barchart.com/getQuote.csv?apikey={config.bc_apikey}&symbols={symbol}&fields=fiftyTwoWkHigh%2CfiftyTwoWkHighDate%2CfiftyTwoWkLow%2CfiftyTwoWkLowDate"
                         bc_df = pd.read_csv(bc_url)
                         fiftytwo_wk_low = bc_df["fiftyTwoWkLow"].iloc[0]
                         fiftytwo_wk_high = bc_df["fiftyTwoWkHigh"].iloc[0]
@@ -113,8 +113,8 @@ def run_bot(bot_login_info, comments_replied_to):
                 comments_replied_to.append(comment.id)
                 
                 # Writing the comment.id to the txt file
-                with open ("replied_comments.txt", "a") as f:
-                    f.write(comment.id + "\n")
+                with open ("replied_comments.txt", "a") as file:
+                    file.write(comment.id + "\n")
                     
                 # Declaring US/Eastern timezone
                 est_time = datetime.now(est_timezone)
@@ -128,21 +128,21 @@ def run_bot(bot_login_info, comments_replied_to):
                 last_friday = closest_friday if closest_friday < now else closest_friday - timedelta(days = 7)
                 
                 # Defining the variables to show in our comment reply
-                stock_info = "The last price for {} (Nasdaq: {}) was **${:.2f}**".format(company_name, symbol, float(price))
-                high_low_info = "\n\n The 52 week high is **${}** and 52 week low is **${}**".format(fiftytwo_wk_high, fiftytwo_wk_low)
+                stock_info = f"The last price for {company_name} (Nasdaq: {symbol}) was **${float(price):.2f}**"
+                high_low_info = f"\n\n The 52 week high is **${fiftytwo_wk_high}** and 52 week low is **${fiftytwo_wk_low}**"
                 price_action_info = "\n\n Price action (weekly and monthly):"
-                weekly_info = "\n\n **Weekly:** {} made a weekly high of **${:.2f}** and a low of **${:.2f}** (for the week ending on {})".format(symbol, float(weekly_data_high), float(weekly_data_low), last_friday.strftime("%b %d, %Y"))
-                monthly_info = "\n\n **Monthly:** {} made a monthly high of **${:.2f}** and a low of **${:.2f}** (for the month of {})".format(symbol, float(monthly_data_high), float(monthly_data_low), last_month_name)
-                time_info = " (as of {})".format(est_time.strftime("%I:%M %p EST on %b %d, %Y"))
-                bot_info = "\n\n ^^I ^^am ^^a ^^new ^^bot ^^and ^^I'm ^^still ^^improving, ^^you ^^can ^^provide ^^feedback ^^by ^^DMing ^^me ^^your ^^suggestions!"
+                weekly_info = f"\n\n **Weekly:** {symbol} made a weekly high of **${float(weekly_data_high):.2f}** and a low of **${float(weekly_data_low):.2f}** (for the week ending on {last_friday.strftime('%b %d, %Y')})"
+                monthly_info = f"\n\n **Monthly:** {symbol} made a monthly high of **${float(monthly_data_high):.2f}** and a low of **${float(monthly_data_low):.2f}** (for the month of {last_month_name})"
+                time_info = f" (as of {est_time.strftime('%I:%M %p EST on %b %d, %Y')})"
+                bot_info = "\n\n ^^I ^^am ^^a ^^new ^^bot ^^and ^^I'm ^^still ^^improving, ^^you ^^can ^^provide ^^feedback ^^and ^^suggestions ^^by ^^DMing ^^me!"
                 
                 # Replying to the comment on reddit
                 comment.reply(stock_info + time_info + high_low_info + price_action_info + weekly_info + monthly_info + bot_info)
                 
                 # Print statements for debugging
-                print("Replied to author {} and comment {}".format(comment.author, comment.id))
+                print(f"Replied to author {comment.author} and comment {comment.id}")
                 print(stock_info + time_info + high_low_info)
-                print("Full path - {}".format(comment.permalink))
+                print(f"Full path - {comment.permalink}")
                 
                 # Sleeping for 60 seconds to limit 5 API Calls per minute
                 print("Sleeping for 60 seconds to limit 5 API Calls per minute...")
@@ -154,8 +154,8 @@ def get_replied_comments():
     if not os.path.isfile("replied_comments.txt"):
         replied_comments = []
     else:
-        with open("replied_comments.txt", "r") as f:
-            replied_comments = f.read()
+        with open("replied_comments.txt", "r") as file:
+            replied_comments = file.read()
             replied_comments = replied_comments.split("\n")
     
     return replied_comments
