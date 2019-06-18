@@ -55,7 +55,7 @@ def run_bot(bot_login_info, comments_replied_to):
     
     print("Running the bot and getting the latest comments...")
     
-    for comment in bot_login_info.subreddit('testingtesttesting').comments(limit = None):
+    for comment in bot_login_info.subreddit('all').comments(limit = None):
         
         for symbol in nasdaq_list:
             stock_comment = f"${symbol}"
