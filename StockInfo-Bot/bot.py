@@ -36,7 +36,7 @@ subreddits = 'wallstreetbets+investing+SecurityAnalysis+InvestmentClub+RobinHood
               foreignpolicyanalysis+SHMPstreetbets+AMD_Stock+thewallstreet+RobinHoodPennyStocks'
              
 ignored_subreddits = ["wallstreetbets", "personalfinance", "weedstocks", "resumes", "sysadmin", "DestinyTheGame", "PowerShell",\
-                      "RealTesla"]
+                      "RealTesla", "linuxquestions"]
 
 # Creating login function for PRAW
 def bot_login():
@@ -135,9 +135,10 @@ def run_bot(bot_login_info, comments_replied_to):
                 monthly_info = f"\n\n **Monthly:** {symbol} made a monthly high of **${float(monthly_data_high):.2f}** and a low of **${float(monthly_data_low):.2f}** (for the month of {last_month_name})"
                 time_info = f" (as of {est_time.strftime('%I:%M %p EST on %b %d, %Y')})"
                 bot_info = "\n\n ^^I ^^am ^^a ^^new ^^bot ^^and ^^I'm ^^still ^^improving, ^^you ^^can ^^provide ^^feedback ^^and ^^suggestions ^^by ^^DMing ^^me!"
+                full_comment = f"{stock_info} {time_info} {high_low_info} {price_action_info} {weekly_info} {monthly_info} {bot_info}"
                 
                 # Replying to the comment on reddit
-                comment.reply(stock_info + time_info + high_low_info + price_action_info + weekly_info + monthly_info + bot_info)
+                comment.reply(full_comment)
                 
                 # Print statements for debugging
                 print(f"Replied to author {comment.author} and comment {comment.id}")
