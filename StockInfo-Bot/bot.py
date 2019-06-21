@@ -36,7 +36,7 @@ subreddits = 'wallstreetbets+investing+SecurityAnalysis+InvestmentClub+RobinHood
               foreignpolicyanalysis+SHMPstreetbets+AMD_Stock+thewallstreet+RobinHoodPennyStocks'
              
 ignored_subreddits = ["wallstreetbets", "personalfinance", "weedstocks", "resumes", "sysadmin", "DestinyTheGame", "PowerShell",\
-                      "RealTesla", "linuxquestions"]
+                      "RealTesla", "linuxquestions", "stocks", "zsh"]
 
 # Creating login function for PRAW
 def bot_login():
@@ -71,10 +71,16 @@ def run_bot(bot_login_info, comments_replied_to):
                         daily_data = pd.DataFrame(requests.get(daily).json()['Time Series (Daily)']).T
                         price = daily_data['4. close'][0]
                         
+                        print("Sleeping after first loop for 5 seconds")
+                        time.sleep(5)
+                        
                         weekly = f"https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol={symbol}&apikey={config.av_apikey}"
                         weekly_data = pd.DataFrame(requests.get(weekly).json()['Weekly Time Series']).T
                         weekly_data_high = weekly_data['2. high'][1]
                         weekly_data_low = weekly_data['3. low'][1]
+                        
+                        print("Sleeping after second loop for 5 seconds")
+                        time.sleep(5)
                         
                         monthly = f"https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol={symbol}&apikey={config.av_apikey}"
                         monthly_data = pd.DataFrame(requests.get(monthly).json()['Monthly Time Series']).T
