@@ -36,7 +36,7 @@ subreddits = 'wallstreetbets+investing+SecurityAnalysis+InvestmentClub+RobinHood
               foreignpolicyanalysis+SHMPstreetbets+AMD_Stock+thewallstreet+RobinHoodPennyStocks'
              
 ignored_subreddits = ["wallstreetbets", "personalfinance", "weedstocks", "resumes", "sysadmin", "DestinyTheGame", "PowerShell",\
-                      "RealTesla", "linuxquestions", "stocks", "zsh"]
+                      "RealTesla", "linuxquestions", "stocks", "zsh", "linuxmasterrace", "communism101", "thewallstreet"]
 
 # Creating login function for PRAW
 def bot_login():
@@ -95,9 +95,6 @@ def run_bot(bot_login_info, comments_replied_to):
                         print("Too many Alpha Vantage API Calls! Sleeping for two minutes")
                         time.sleep(120)
                 
-                # Gettin company name data from the DataFrame
-                company_name = nasdaq.loc[nasdaq['Symbol'] == symbol, 'Company Name'].iloc[0]
-                
                 valid_bc_data = False
                 
                 # While loop to get barchart data until there's no error
@@ -121,7 +118,10 @@ def run_bot(bot_login_info, comments_replied_to):
                 # Writing the comment.id to the txt file
                 with open ("replied_comments.txt", "a") as file:
                     file.write(comment.id + "\n")
-                    
+
+                # Gettin company name data from the DataFrame
+                company_name = nasdaq.loc[nasdaq['Symbol'] == symbol, 'Company Name'].iloc[0]
+
                 # Declaring US/Eastern timezone
                 est_time = datetime.now(est_timezone)
                 
@@ -134,21 +134,34 @@ def run_bot(bot_login_info, comments_replied_to):
                 last_friday = closest_friday if closest_friday < now else closest_friday - timedelta(days = 7)
                 
                 # Defining the variables to show in our comment reply
-                stock_info = f"The last price for {company_name} (Nasdaq: {symbol}) was **${float(price):.2f}**"
-                high_low_info = f"\n\n The 52 week high is **${fiftytwo_wk_high}** and 52 week low is **${fiftytwo_wk_low}**"
-                price_action_info = "\n\n Price action (weekly and monthly):"
-                weekly_info = f"\n\n **Weekly:** {symbol} made a weekly high of **${float(weekly_data_high):.2f}** and a low of **${float(weekly_data_low):.2f}** (for the week ending on {last_friday.strftime('%b %d, %Y')})"
-                monthly_info = f"\n\n **Monthly:** {symbol} made a monthly high of **${float(monthly_data_high):.2f}** and a low of **${float(monthly_data_low):.2f}** (for the month of {last_month_name})"
-                time_info = f" (as of {est_time.strftime('%I:%M %p EST on %b %d, %Y')})"
-                bot_info = "\n\n ^^I ^^am ^^a ^^new ^^bot ^^and ^^I'm ^^still ^^improving, ^^you ^^can ^^provide ^^feedback ^^and ^^suggestions ^^by ^^DMing ^^me!"
-                full_comment = f"{stock_info} {time_info} {high_low_info} {price_action_info} {weekly_info} {monthly_info} {bot_info}"
+                # stock_info = f"The last price for {company_name} (Nasdaq: {symbol}) was **${float(price):.2f}**"
+                # high_low_info = f"\n\n The 52 week high is **${fiftytwo_wk_high}** and 52 week low is **${fiftytwo_wk_low}**"
+                # price_action_info = "\n\n Price action (weekly and monthly):"
+                # weekly_info = f"\n\n **Weekly:** {symbol} made a weekly high of **${float(weekly_data_high):.2f}** and a low of **${float(weekly_data_low):.2f}** (for the week ending on {last_friday.strftime('%b %d, %Y')})"
+                # monthly_info = f"\n\n **Monthly:** {symbol} made a monthly high of **${float(monthly_data_high):.2f}** and a low of **${float(monthly_data_low):.2f}** (for the month of {last_month_name})"
+                # time_info = f" (as of {est_time.strftime('%I:%M %p EST on %b %d, %Y')})"
+                # bot_info = "\n\n ^^I ^^am ^^a ^^new ^^bot ^^and ^^I'm ^^still ^^improving, ^^you ^^can ^^provide ^^feedback ^^and ^^suggestions ^^by ^^DMing ^^me!"
+                # full_comment = f"{stock_info} {time_info} {high_low_info} {price_action_info} {weekly_info} {monthly_info} {bot_info}"
                 
+                headline = f"{company_name} (Nasdaq: {symbol})"
+                columns = f"Timeframe | {symbol} | Date and Time"
+                divider = "---|---|---"
+                last_price = f"Last Price | ${float(price):.2f} | as of {est_time.strftime('%I:%M %p EST on %b %d, %Y')}"
+                week_high = f"1-wk High | ${float(weekly_data_high):.2f} | for the week ending on {last_friday.strftime('%b %d, %Y')}"
+                week_low = f"1-wk Low | ${float(weekly_data_low):.2f} | "
+                month_high = f"1-mnth High | ${float(monthly_data_high):.2f} | for the month of {last_month_name}"
+                month_low = f"1-mnth Low | ${float(monthly_data_low):.2f} | "
+                fivetwo_high = f"52-wk High | ${fiftytwo_wk_high} | "
+                fivetwo_low = f"52-wk Low | ${fiftytwo_wk_low} | "
+                bot_info = "^^I ^^am ^^a ^^new ^^bot ^^and ^^I'm ^^still ^^improving, ^^you ^^can ^^provide ^^feedback ^^and ^^suggestions ^^by ^^DMing ^^me!"
+                full_comment = f"{headline} \n\n {columns} \n {divider} \n {last_price} \n {week_high} \n {week_low} \n {month_high} \n {month_low} \n {fivetwo_high} \n {fivetwo_low} \n\n {bot_info}"
+
                 # Replying to the comment on reddit
                 comment.reply(full_comment)
-                
+
                 # Print statements for debugging
                 print(f"Replied to author {comment.author} and comment {comment.id}")
-                print(stock_info + time_info + high_low_info)
+                #print(stock_info + time_info + high_low_info)
                 print(f"Full path - {comment.permalink}")
                 
                 # Sleeping for 60 seconds to limit 5 API Calls per minute
