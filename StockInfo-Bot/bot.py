@@ -24,19 +24,32 @@ est_timezone = timezone('US/Eastern')
 # Importing OS library to read/write files
 import os
 
+# Importing Boto3 to communicate with Amazon DynamoDB
+import boto3
+
+session = boto3.Session(
+    aws_access_key_id = config.aws_access_key,
+    aws_secret_access_key = config.aws_secret_access_key,
+    region_name = config.region_name
+)
+
+dynamodb = session.resource('dynamodb')
+table = dynamodb.Table('StockInfoBot')
+
 # Creating Pandas DataFrame
 nasdaq = pd.read_csv('nasdaq-listed-symbols.csv')
 
 # Assigning a variable to the Symbol column in the DataFrame
 nasdaq_list = nasdaq.Symbol.values
 
-subreddits = 'wallstreetbets+investing+SecurityAnalysis+InvestmentClub+RobinHood+StockMarket+Stock_Picks+Forex+options+stocks\
-              +pennystocks+finance+algotrading+CFA+1kRobinHoodProject+tastytrade+bitcoinhistory+ValueInvesting+Shorting+\
-              forexbets+FinancialCareers+optionstrading+quant+TradingEducation+daytraders+ONCS+digitalcoin+passiveincome+\
-              foreignpolicyanalysis+SHMPstreetbets+AMD_Stock+thewallstreet+RobinHoodPennyStocks'
+# subreddits = 'wallstreetbets+investing+SecurityAnalysis+InvestmentClub+RobinHood+StockMarket+Stock_Picks+Forex+options+stocks\
+#               +pennystocks+finance+algotrading+CFA+1kRobinHoodProject+tastytrade+bitcoinhistory+ValueInvesting+Shorting+\
+#               forexbets+FinancialCareers+optionstrading+quant+TradingEducation+daytraders+ONCS+digitalcoin+passiveincome+\
+#               foreignpolicyanalysis+SHMPstreetbets+AMD_Stock+thewallstreet+RobinHoodPennyStocks'
              
 ignored_subreddits = ["wallstreetbets", "personalfinance", "weedstocks", "resumes", "sysadmin", "DestinyTheGame", "PowerShell",\
-                      "RealTesla", "linuxquestions", "stocks", "zsh", "linuxmasterrace", "communism101", "thewallstreet"]
+                      "RealTesla", "linuxquestions", "stocks", "zsh", "linuxmasterrace", "communism101", "thewallstreet",\
+                      "AskReddit"]
 
 # Creating login function for PRAW
 def bot_login():
@@ -163,7 +176,19 @@ def run_bot(bot_login_info, comments_replied_to):
                 print(f"Replied to author {comment.author} and comment {comment.id}")
                 #print(stock_info + time_info + high_low_info)
                 print(f"Full path - {comment.permalink}")
+
+                insert_into_db = table.put_item(
+                    Item = {
+                        'Time': f"{est_time.strftime('%Y-%m-%d %H:%M:%S')}",
+                        'Author': f"{comment.author}",
+                        'Stock': f"{symbol}",
+                        'Company Name': f"{company_name}",
+                        'Comment': f"{comment.permalink}"
+                    }
+                )
                 
+                print(insert_into_db)
+
                 # Sleeping for 60 seconds to limit 5 API Calls per minute
                 print("Sleeping for 60 seconds to limit 5 API Calls per minute...")
                 time.sleep(60)
