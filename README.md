@@ -34,13 +34,15 @@ A convenient bot that displays a snippet of a stock by showing the full name of 
 
 Stock Info Bot uses the Alpha Vantage API for the closing price, weekly and monthly prices and Barchart API for 52 week prices. 
 
-The bot is running on Ubuntu 16.04 which is hosted on Amazon's AWS EC2.
+The bot is running on Ubuntu 16.04 which is hosted on Amazon's AWS EC2. The reddit comment data is stored on Amazon's DynamoDB.
 
 ## 💭 How it works <a name = "howitworks"></a>
 
 The bot first connects to reddit by logging in with the login credentials and reddit's client id and client secret. After successfully authenticating the bot, it scans all of reddit's comments to search for the keyword $(stock ticker) and whenever it finds it, it triggers the bot to reply. 
 
 The bot searches for the ticker symbol in the Pandas Dataframe (converted from a csv file) and then returns the stock ticker and the corresponding name of the company. It then uses Alpha Vantage's realtime API to get closing price information and returns the last closing price and weekly and monthly prices. It also uses Barchart's API (delayed by 15 minutes) to return the stock's 52 week high and low prices. After getting all the information necessary to reply to the original user, Stock Info Bot replies to the comment in under a minute.
+
+The comment information is saved to DynamoDB afterwards.
 
 The entire bot is written in Python 3.7
 
@@ -64,6 +66,7 @@ The bot will then swiftly reply.
 ## ⛏️ Built Using <a name = "built_using"></a>
 + [PRAW](https://praw.readthedocs.io/en/latest/) - Reddit's Python wrapper
 + [Amazon AWS EC2](https://aws.amazon.com/ec2/) - Amazon AWS's cloud computing service
++ [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) - Amazon AWS's nonrelational database service
 + [Alpha Vantage API](https://www.alphavantage.co/) - Alpha Vantage's realtime API
 + [Barchart API](https://www.barchart.com/ondemand/api/getQuote) - Barchart's financial data API
 + [Pandas](https://pandas.pydata.org/) - Library for data manipulation and analysis
