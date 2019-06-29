@@ -80,20 +80,20 @@ def run_bot(bot_login_info, comments_replied_to):
                 # While loop to get Alpha Vantage data until there's no error
                 while not valid_av_data:
                     try:
-                        daily = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={config.av_apikey}"
-                        daily_data = pd.DataFrame(requests.get(daily).json()['Time Series (Daily)']).T
-                        price = daily_data['4. close'][0]
+                        # daily = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={config.av_apikey}"
+                        # daily_data = pd.DataFrame(requests.get(daily).json()['Time Series (Daily)']).T
+                        # price = daily_data['4. close'][0]
                         
-                        print("Sleeping after first loop for 5 seconds")
-                        time.sleep(5)
+                        # print("Sleeping after first loop for 5 seconds")
+                        # time.sleep(5)
                         
                         weekly = f"https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol={symbol}&apikey={config.av_apikey}"
                         weekly_data = pd.DataFrame(requests.get(weekly).json()['Weekly Time Series']).T
                         weekly_data_high = weekly_data['2. high'][1]
                         weekly_data_low = weekly_data['3. low'][1]
                         
-                        print("Sleeping after second loop for 5 seconds")
-                        time.sleep(5)
+                        # print("Sleeping after second loop for 5 seconds")
+                        # time.sleep(5)
                         
                         monthly = f"https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol={symbol}&apikey={config.av_apikey}"
                         monthly_data = pd.DataFrame(requests.get(monthly).json()['Monthly Time Series']).T
@@ -104,8 +104,8 @@ def run_bot(bot_login_info, comments_replied_to):
                         
                         if valid_av_data:
                             continue
-                    except:
-                        print("Too many Alpha Vantage API Calls! Sleeping for two minutes")
+                    except Exception as e:
+                        print(f"Error occured: {e} Sleeping for two minutes")
                         time.sleep(120)
                 
                 valid_bc_data = False
@@ -113,16 +113,17 @@ def run_bot(bot_login_info, comments_replied_to):
                 # While loop to get barchart data until there's no error
                 while not valid_bc_data:
                     try:
-                        bc_url = f"https://marketdata.websol.barchart.com/getQuote.csv?apikey={config.bc_apikey}&symbols={symbol}&fields=fiftyTwoWkHigh%2CfiftyTwoWkHighDate%2CfiftyTwoWkLow%2CfiftyTwoWkLowDate"
+                        bc_url = f"https://marketdata.websol.barchart.com/getQuote.csv?apikey={config.bc_apikey}&symbols={symbol}&fields=fiftyTwoWkHigh%2CfiftyTwoWkLow%2ClastPrice"
                         bc_df = pd.read_csv(bc_url)
                         fiftytwo_wk_low = bc_df["fiftyTwoWkLow"].iloc[0]
                         fiftytwo_wk_high = bc_df["fiftyTwoWkHigh"].iloc[0]
+                        last_price = bc_df["lastPrice"].iloc[0]
                         valid_bc_data = True
                         
                         if valid_bc_data:
                             continue
-                    except:
-                        print("Too many Barchart API Calls! Sleeping for a minute")
+                    except Exception as e:
+                        print(f"Error occured: {e} Sleeping for a minute")
                         time.sleep(60)
                
                 # Appending comment.id to the txt file
@@ -146,20 +147,11 @@ def run_bot(bot_login_info, comments_replied_to):
                 closest_friday = now + timedelta(days = (4 - now.weekday()))
                 last_friday = closest_friday if closest_friday < now else closest_friday - timedelta(days = 7)
                 
-                # Defining the variables to show in our comment reply
-                # stock_info = f"The last price for {company_name} (Nasdaq: {symbol}) was **${float(price):.2f}**"
-                # high_low_info = f"\n\n The 52 week high is **${fiftytwo_wk_high}** and 52 week low is **${fiftytwo_wk_low}**"
-                # price_action_info = "\n\n Price action (weekly and monthly):"
-                # weekly_info = f"\n\n **Weekly:** {symbol} made a weekly high of **${float(weekly_data_high):.2f}** and a low of **${float(weekly_data_low):.2f}** (for the week ending on {last_friday.strftime('%b %d, %Y')})"
-                # monthly_info = f"\n\n **Monthly:** {symbol} made a monthly high of **${float(monthly_data_high):.2f}** and a low of **${float(monthly_data_low):.2f}** (for the month of {last_month_name})"
-                # time_info = f" (as of {est_time.strftime('%I:%M %p EST on %b %d, %Y')})"
-                # bot_info = "\n\n ^^I ^^am ^^a ^^new ^^bot ^^and ^^I'm ^^still ^^improving, ^^you ^^can ^^provide ^^feedback ^^and ^^suggestions ^^by ^^DMing ^^me!"
-                # full_comment = f"{stock_info} {time_info} {high_low_info} {price_action_info} {weekly_info} {monthly_info} {bot_info}"
-                
+                # Reddit comment variables
                 headline = f"{company_name} (Nasdaq: {symbol})"
                 columns = f"Timeframe | {symbol} | Date and Time"
                 divider = "---|---|---"
-                last_price = f"Last Price | ${float(price):.2f} | as of {est_time.strftime('%I:%M %p EST on %b %d, %Y')}"
+                last_price = f"Last Price | ${float(last_price):.2f} | as of {est_time.strftime('%I:%M %p EST on %b %d, %Y')}"
                 week_high = f"1-wk High | ${float(weekly_data_high):.2f} | for the week ending on {last_friday.strftime('%b %d, %Y')}"
                 week_low = f"1-wk Low | ${float(weekly_data_low):.2f} | "
                 month_high = f"1-mnth High | ${float(monthly_data_high):.2f} | for the month of {last_month_name}"
@@ -177,6 +169,7 @@ def run_bot(bot_login_info, comments_replied_to):
                 #print(stock_info + time_info + high_low_info)
                 print(f"Full path - {comment.permalink}")
 
+                # Inserting data into Amazon DynamoDB
                 insert_into_db = table.put_item(
                     Item = {
                         'Time': f"{est_time.strftime('%Y-%m-%d %H:%M:%S')}",
@@ -189,9 +182,9 @@ def run_bot(bot_login_info, comments_replied_to):
                 
                 print(insert_into_db)
 
-                # Sleeping for 60 seconds to limit 5 API Calls per minute
-                print("Sleeping for 60 seconds to limit 5 API Calls per minute...")
-                time.sleep(60)
+                # Sleeping for 20 seconds to limit 5 API Calls per minute
+                print("Sleeping for 20 seconds to limit 5 API Calls per minute...")
+                time.sleep(20)
                 
 # Creating comment saving function
 def get_replied_comments():
@@ -211,7 +204,8 @@ comments_replied_to = get_replied_comments()
 # While loop to continuosly run the run_bot function
 while True:
     try:
-        print("\n", datetime.now())
+        est_time = datetime.now(est_timezone)
+        print("\n", est_time.strftime('%I:%M:%S %p'))
         run_bot(bot_login(), comments_replied_to)
     except APIException:
         print("PRAW API Exception was raised! Sleeping for 10 minutes")
