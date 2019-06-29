@@ -14,7 +14,7 @@ import pandas as pd
 import requests
 
 # Importing datetime library for debugging and time libraries for displaying time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import time
 from pytz import timezone
 
@@ -113,11 +113,14 @@ def run_bot(bot_login_info, comments_replied_to):
                 # While loop to get barchart data until there's no error
                 while not valid_bc_data:
                     try:
-                        bc_url = f"https://marketdata.websol.barchart.com/getQuote.csv?apikey={config.bc_apikey}&symbols={symbol}&fields=fiftyTwoWkHigh%2CfiftyTwoWkLow%2ClastPrice"
+                        bc_url = f"https://marketdata.websol.barchart.com/getQuote.csv?apikey={config.bc_apikey}&symbols={symbol}&fields=fiftyTwoWkHigh%2CfiftyTwoWkLow%2ClastPrice%2CfiftyTwoWkHighDate%2CfiftyTwoWkLowDate"
                         bc_df = pd.read_csv(bc_url)
                         fiftytwo_wk_low = bc_df["fiftyTwoWkLow"].iloc[0]
+                        fiftytwo_wk_low_date = bc_df["fiftyTwoWkLowDate"].iloc[0]
                         fiftytwo_wk_high = bc_df["fiftyTwoWkHigh"].iloc[0]
+                        fiftytwo_wk_high_date = bc_df["fiftyTwoWkHighDate"].iloc[0]
                         last_price = bc_df["lastPrice"].iloc[0]
+
                         valid_bc_data = True
                         
                         if valid_bc_data:
@@ -146,6 +149,14 @@ def run_bot(bot_login_info, comments_replied_to):
                 now = datetime.now()
                 closest_friday = now + timedelta(days = (4 - now.weekday()))
                 last_friday = closest_friday if closest_friday < now else closest_friday - timedelta(days = 7)
+
+                # Get 52wk high and low dates and split them to get individual integers
+                low_date = fiftytwo_wk_low_date.split('-')
+                high_date = fiftytwo_wk_high_date.split('-') 
+
+                # Convert integers into readable, displayable text by using strftime module
+                low_date_display = date(day = int(low_date[2]), month = int(low_date[1]), year = int(low_date[0])).strftime('on %b %d, %Y')
+                high_date_display = date(day = int(high_date[2]), month = int(high_date[1]), year = int(high_date[0])).strftime('on %b %d, %Y')
                 
                 # Reddit comment variables
                 headline = f"{company_name} (Nasdaq: {symbol})"
@@ -156,8 +167,8 @@ def run_bot(bot_login_info, comments_replied_to):
                 week_low = f"1-wk Low | ${float(weekly_data_low):.2f} | "
                 month_high = f"1-mnth High | ${float(monthly_data_high):.2f} | for the month of {last_month_name}"
                 month_low = f"1-mnth Low | ${float(monthly_data_low):.2f} | "
-                fivetwo_high = f"52-wk High | ${fiftytwo_wk_high} | "
-                fivetwo_low = f"52-wk Low | ${fiftytwo_wk_low} | "
+                fivetwo_high = f"52-wk High | ${fiftytwo_wk_high} | {high_date_display}"
+                fivetwo_low = f"52-wk Low | ${fiftytwo_wk_low} | {low_date_display}"
                 bot_info = "^^I ^^am ^^a ^^new ^^bot ^^and ^^I'm ^^still ^^improving, ^^you ^^can ^^provide ^^feedback ^^and ^^suggestions ^^by ^^DMing ^^me!"
                 full_comment = f"{headline} \n\n {columns} \n {divider} \n {last_price} \n {week_high} \n {week_low} \n {month_high} \n {month_low} \n {fivetwo_high} \n {fivetwo_low} \n\n {bot_info}"
 
