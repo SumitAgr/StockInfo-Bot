@@ -58,7 +58,7 @@ The bot will then swiftly reply.
 
 ### 📷 Example: <a name = "example"></a>
 
-<p align="center">
+<p align="left">
   <a href="" rel="noopener">
  <img src="https://i.imgur.com/u2TUebL.png" alt="Bot example for $TSLA"></a>
 </p>
