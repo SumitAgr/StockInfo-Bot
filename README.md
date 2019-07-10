@@ -50,7 +50,7 @@ The entire bot is written in Python 3.7
 
 To use the bot, type the following in a reddit comment box:
 ```
-> $QCOM
+> $TSLA
 ```
 There has to be a $ in front of the stock ticker, otherwise it will not work.
 
@@ -60,7 +60,7 @@ The bot will then swiftly reply.
 
 <p align="center">
   <a href="" rel="noopener">
- <img src="https://i.imgur.com/sGYMAW6.png" alt="Bot example for $QCOM"></a>
+ <img src="https://i.imgur.com/u2TUebL.png" alt="Bot example for $TSLA"></a>
 </p>
 
 ## ⛏️ Built Using <a name = "built_using"></a>
