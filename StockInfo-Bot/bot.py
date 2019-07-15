@@ -27,6 +27,13 @@ import os
 # Importing Boto3 to communicate with Amazon DynamoDB
 import boto3
 
+from pyvirtualdisplay import Display
+from selenium import webdriver
+
+display = Display(visible=0, size=(800, 600))
+display.start()
+browser = webdriver.Firefox()
+
 session = boto3.Session(
     aws_access_key_id = config.aws_access_key,
     aws_secret_access_key = config.aws_secret_access_key,
@@ -157,7 +164,10 @@ def run_bot(bot_login_info, comments_replied_to):
                 # Convert integers into readable, displayable text by using strftime module
                 low_date_display = date(day = int(low_date[2]), month = int(low_date[1]), year = int(low_date[0])).strftime('on %b %d, %Y')
                 high_date_display = date(day = int(high_date[2]), month = int(high_date[1]), year = int(high_date[0])).strftime('on %b %d, %Y')
-                
+
+                browser.get(f'https://www.google.com/search?q={symbol}')
+                pe_ratio_finder = browser.find_element_by_css_selector('#knowledge-finance-wholepage__entity-summary > div > div > g-card-section:nth-child(2) > div > div > div:nth-child(1) > table > tbody > tr:nth-child(5) > td.iyjjgb').text
+
                 # Reddit comment variables
                 headline = f"{company_name} (Nasdaq: {symbol})"
                 columns = f"Timeframe | {symbol} | Date and Time"
@@ -169,8 +179,9 @@ def run_bot(bot_login_info, comments_replied_to):
                 month_low = f"1-mnth Low | ${float(monthly_data_low):.2f} | "
                 fivetwo_high = f"52-wk High | ${fiftytwo_wk_high} | {high_date_display}"
                 fivetwo_low = f"52-wk Low | ${fiftytwo_wk_low} | {low_date_display}"
+                pe_ratio = f"P/E ratio | {pe_ratio_finder} | "
                 bot_info = "^^I ^^am ^^a ^^new ^^bot ^^and ^^I'm ^^still ^^improving, ^^you ^^can ^^provide ^^feedback ^^and ^^suggestions ^^by ^^DMing ^^me!"
-                full_comment = f"{headline} \n\n {columns} \n {divider} \n {last_price} \n {week_high} \n {week_low} \n {month_high} \n {month_low} \n {fivetwo_high} \n {fivetwo_low} \n\n {bot_info}"
+                full_comment = f"{headline} \n\n {columns} \n {divider} \n {last_price} \n {week_high} \n {week_low} \n {month_high} \n {month_low} \n {fivetwo_high} \n {fivetwo_low} \n {pe_ratio} \n\n {bot_info}"
 
                 # Replying to the comment on reddit
                 comment.reply(full_comment)
