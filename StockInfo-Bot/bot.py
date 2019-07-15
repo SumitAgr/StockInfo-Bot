@@ -184,7 +184,7 @@ def run_bot(bot_login_info, comments_replied_to):
                 month_low = f"1-mnth Low | ${float(monthly_data_low):.2f} | "
                 fivetwo_high = f"52-wk High | ${fiftytwo_wk_high} | {high_date_display}"
                 fivetwo_low = f"52-wk Low | ${fiftytwo_wk_low} | {low_date_display}"
-                pe_ratio = f"P/E ratio | {pe_ratio_finder} | "
+                pe_ratio = f"P/E ratio |   {pe_ratio_finder} | "
                 bot_info = "^^I ^^am ^^a ^^new ^^bot ^^and ^^I'm ^^still ^^improving, ^^you ^^can ^^provide ^^feedback ^^and ^^suggestions ^^by ^^DMing ^^me!"
                 full_comment = f"{headline} \n\n {columns} \n {divider} \n {last_price} \n {week_high} \n {week_low} \n {month_high} \n {month_low} \n {fivetwo_high} \n {fivetwo_low} \n {pe_ratio} \n\n {bot_info}"
 
