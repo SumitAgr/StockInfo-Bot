@@ -165,8 +165,12 @@ def run_bot(bot_login_info, comments_replied_to):
                 low_date_display = date(day = int(low_date[2]), month = int(low_date[1]), year = int(low_date[0])).strftime('on %b %d, %Y')
                 high_date_display = date(day = int(high_date[2]), month = int(high_date[1]), year = int(high_date[0])).strftime('on %b %d, %Y')
 
-                browser.get(f'https://www.google.com/search?q={symbol}')
-                pe_ratio_finder = browser.find_element_by_css_selector('#knowledge-finance-wholepage__entity-summary > div > div > g-card-section:nth-child(2) > div > div > div:nth-child(1) > table > tbody > tr:nth-child(5) > td.iyjjgb').text
+                # Getting P/E ratio from Google Finance
+                try:
+                    browser.get(f'https://www.google.com/search?q={symbol}')
+                    pe_ratio_finder = browser.find_element_by_css_selector('#knowledge-finance-wholepage__entity-summary > div > div > g-card-section:nth-child(2) > div > div > div:nth-child(1) > table > tbody > tr:nth-child(5) > td.iyjjgb').text
+                except:
+                    pe_ratio_finder = '-'
 
                 # Reddit comment variables
                 headline = f"{company_name} (Nasdaq: {symbol})"
