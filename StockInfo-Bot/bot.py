@@ -27,10 +27,7 @@ import os
 # Importing Boto3 to communicate with Amazon DynamoDB
 import boto3
 
-<<<<<<< HEAD
-=======
 # Libraries to start headless Firefox browser on the virtual machine
->>>>>>> origin
 from pyvirtualdisplay import Display
 from selenium import webdriver
 
