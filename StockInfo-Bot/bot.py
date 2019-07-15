@@ -171,7 +171,7 @@ def run_bot(bot_login_info, comments_replied_to):
 
                 # Getting P/E ratio from Google Finance
                 try:
-                    browser.get(f'https://www.google.com/search?q={symbol}')
+                    browser.get(f'https://www.google.com/search?q=NASDAQ%20{symbol}')
                     pe_ratio_finder = browser.find_element_by_css_selector('#knowledge-finance-wholepage__entity-summary > div > div > g-card-section:nth-child(2) > div > div > div:nth-child(1) > table > tbody > tr:nth-child(5) > td.iyjjgb').text
                 except:
                     pe_ratio_finder = '-'
