@@ -49,11 +49,6 @@ nasdaq = pd.read_csv('nasdaq-listed-symbols.csv')
 
 # Assigning a variable to the Symbol column in the DataFrame
 nasdaq_list = nasdaq.Symbol.values
-
-# subreddits = 'wallstreetbets+investing+SecurityAnalysis+InvestmentClub+RobinHood+StockMarket+Stock_Picks+Forex+options+stocks\
-#               +pennystocks+finance+algotrading+CFA+1kRobinHoodProject+tastytrade+bitcoinhistory+ValueInvesting+Shorting+\
-#               forexbets+FinancialCareers+optionstrading+quant+TradingEducation+daytraders+ONCS+digitalcoin+passiveincome+\
-#               foreignpolicyanalysis+SHMPstreetbets+AMD_Stock+thewallstreet+RobinHoodPennyStocks'
              
 ignored_subreddits = ["wallstreetbets", "personalfinance", "weedstocks", "resumes", "sysadmin", "DestinyTheGame", "PowerShell",\
                       "RealTesla", "linuxquestions", "stocks", "zsh", "linuxmasterrace", "communism101", "thewallstreet",\
@@ -87,21 +82,11 @@ def run_bot(bot_login_info, comments_replied_to):
                 
                 # While loop to get Alpha Vantage data until there's no error
                 while not valid_av_data:
-                    try:
-                        # daily = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={config.av_apikey}"
-                        # daily_data = pd.DataFrame(requests.get(daily).json()['Time Series (Daily)']).T
-                        # price = daily_data['4. close'][0]
-                        
-                        # print("Sleeping after first loop for 5 seconds")
-                        # time.sleep(5)
-                        
+                    try:                  
                         weekly = f"https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol={symbol}&apikey={config.av_apikey}"
                         weekly_data = pd.DataFrame(requests.get(weekly).json()['Weekly Time Series']).T
                         weekly_data_high = weekly_data['2. high'][1]
                         weekly_data_low = weekly_data['3. low'][1]
-                        
-                        # print("Sleeping after second loop for 5 seconds")
-                        # time.sleep(5)
                         
                         monthly = f"https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol={symbol}&apikey={config.av_apikey}"
                         monthly_data = pd.DataFrame(requests.get(monthly).json()['Monthly Time Series']).T
