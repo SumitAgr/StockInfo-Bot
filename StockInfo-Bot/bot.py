@@ -27,14 +27,6 @@ import os
 # Importing Boto3 to communicate with Amazon DynamoDB
 import boto3
 
-# Libraries to start headless Firefox browser on the virtual machine
-from pyvirtualdisplay import Display
-from selenium import webdriver
-
-display = Display(visible=0, size=(800, 600))
-display.start()
-browser = webdriver.Firefox()
-
 session = boto3.Session(
     aws_access_key_id = config.aws_access_key,
     aws_secret_access_key = config.aws_secret_access_key,
@@ -44,6 +36,14 @@ session = boto3.Session(
 dynamodb = session.resource('dynamodb')
 table = dynamodb.Table('StockInfoBot')
 
+# Libraries to start headless Firefox browser on the virtual machine
+from pyvirtualdisplay import Display
+from selenium import webdriver
+
+display = Display(visible=0, size=(800, 600))
+display.start()
+browser = webdriver.Firefox()
+
 # Creating Pandas DataFrame
 nasdaq = pd.read_csv('nasdaq-listed-symbols.csv')
 
@@ -52,7 +52,7 @@ nasdaq_list = nasdaq.Symbol.values
              
 ignored_subreddits = ["wallstreetbets", "personalfinance", "weedstocks", "resumes", "sysadmin", "DestinyTheGame", "PowerShell",\
                       "RealTesla", "linuxquestions", "stocks", "zsh", "linuxmasterrace", "communism101", "thewallstreet",\
-                      "AskReddit"]
+                      "AskReddit", "gtaonline"]
 
 # Creating login function for PRAW
 def bot_login():
