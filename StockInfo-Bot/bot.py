@@ -42,7 +42,7 @@ from selenium import webdriver
 
 display = Display(visible=0, size=(800, 600))
 display.start()
-browser = webdriver.Firefox()
+browser = webdriver.PhantomJS()
 
 # Creating Pandas DataFrame
 nasdaq = pd.read_csv('nasdaq-listed-symbols.csv')
@@ -226,5 +226,5 @@ while True:
         print("PRAW 403 HTTP RESPONSE occured! Sleeping for 10 minutes")
         time.sleep(600)
     except prawcore.ResponseException:
-        print("PRAW 503 HTTP REsponse! SLeeping for a minute...")
+        print("PRAW 503 HTTP RESPONSE! SLeeping for a minute...")
         time.sleep(60)
