@@ -1,5 +1,4 @@
 <h3 align="center">Stock Info Bot for Reddit</h3>
----
 
 <p align="center"> 🤖 A reddit bot that displays the last closing price information of a stock. Simply enter: $(stock ticker) and the bot will reply to you with the name of the company, closing price, 52 week high and low prices, weekly high and low and monthly high low prices.
     <br> 
