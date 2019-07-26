@@ -1,18 +1,4 @@
-<p align="center">
-  <a href="" rel="noopener">
- <img width=200px height=200px src="https://i.imgur.com/KHIluJM.png" alt="Bot logo"></a>
-</p>
-
 <h3 align="center">Stock Info Bot for Reddit</h3>
-
-<div align="center">
-
-![Language](https://img.shields.io/badge/Python-3.7-blue.svg) 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-[![CodeFactor](https://www.codefactor.io/repository/github/sumitagr/stockinfo-bot/badge)](https://www.codefactor.io/repository/github/sumitagr/stockinfo-bot)
-
-</div>
-
 ---
 
 <p align="center"> 🤖 A reddit bot that displays the last closing price information of a stock. Simply enter: $(stock ticker) and the bot will reply to you with the name of the company, closing price, 52 week high and low prices, weekly high and low and monthly high low prices.
