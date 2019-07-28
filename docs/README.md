@@ -1,11 +1,11 @@
 <h3 align="center">Stock Info Bot for Reddit</h3>
 
-<p align="left">
+<p align="center">
   <a href="" rel="noopener">
- <img src="https://i.imgur.com/FWRhIcJ.png" alt="Bot logo"></a>
+ <img src="https://i.imgur.com/FWRhIcJ.png" alt="Bot logo" height = "100" weight = "100"></a>
 </p>
 
-<p align="center"> 🤖 A reddit bot that displays the last closing price information of a stock. Simply enter: $(stock ticker) and the bot will reply to you with the name of the company, closing price, 52 week high and low prices, weekly high and low and monthly high low prices.
+<p align="center"> 🤖 A reddit bot that displays the last closing price information of a stock. Simply enter: $(stock ticker) and the bot will reply to you with the name of the company, closing price, 52 week high and low prices, weekly high and low, monthly high and low prices and the P/E ratio.
     <br> 
 </p>
 
