@@ -15,7 +15,7 @@
 
 ---
 
-<p align="center"> 🤖 A reddit bot that displays the last closing price information of a stock. Simply enter: $(stock ticker) and the bot will reply to you with the name of the company, closing price, 52 week high and low prices, weekly high and low and monthly high low prices.
+<p align="center"> 🤖 A reddit bot that displays the last closing price information of a stock. Simply enter: $(stock ticker) and the bot will reply to you with the name of the company, closing price, 52 week high and low prices, weekly high and low, monthly high and low prices and the P/E ratio.
     <br> 
 </p>
 
@@ -60,7 +60,7 @@ The bot will then swiftly reply.
 
 <p align="left">
   <a href="" rel="noopener">
- <img src="https://i.imgur.com/GhM884P.png" alt="Bot example for $TSLA"></a>
+ <img src="https://i.imgur.com/GhM884P.png" alt="Bot example for $NVDA"></a>
 </p>
 
 ## ⛏️ Built Using <a name = "built_using"></a>
