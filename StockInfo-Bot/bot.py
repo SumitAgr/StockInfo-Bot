@@ -76,51 +76,35 @@ def run_bot(bot_login_info, comments_replied_to):
         for symbol in nasdaq_list:
             stock_comment = f"${symbol}"
             if stock_comment in comment.body and comment.id not in comments_replied_to and comment.author != config.username and comment.subreddit not in ignored_subreddits:
-                
-                # Defining the url to get data from and creating a DataFrame and then extracting price and company name
-                valid_av_data = False
-                
-                # While loop to get Alpha Vantage data until there's no error
-                while not valid_av_data:
-                    try:                  
-                        weekly = f"https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol={symbol}&apikey={config.av_apikey}"
-                        weekly_data = pd.DataFrame(requests.get(weekly).json()['Weekly Time Series']).T
-                        weekly_data_high = weekly_data['2. high'][1]
-                        weekly_data_low = weekly_data['3. low'][1]
-                        
-                        monthly = f"https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol={symbol}&apikey={config.av_apikey}"
-                        monthly_data = pd.DataFrame(requests.get(monthly).json()['Monthly Time Series']).T
-                        monthly_data_high = monthly_data['2. high'][1]
-                        monthly_data_low = monthly_data['3. low'][1]
-                        
-                        valid_av_data = True
-                        
-                        if valid_av_data:
-                            continue
-                    except Exception as e:
-                        print(f"Error occured: {e} Sleeping for two minutes")
-                        time.sleep(120)
-                
-                valid_bc_data = False
-                
-                # While loop to get barchart data until there's no error
-                while not valid_bc_data:
-                    try:
-                        bc_url = f"https://marketdata.websol.barchart.com/getQuote.csv?apikey={config.bc_apikey}&symbols={symbol}&fields=fiftyTwoWkHigh%2CfiftyTwoWkLow%2ClastPrice%2CfiftyTwoWkHighDate%2CfiftyTwoWkLowDate"
-                        bc_df = pd.read_csv(bc_url)
-                        fiftytwo_wk_low = bc_df["fiftyTwoWkLow"].iloc[0]
-                        fiftytwo_wk_low_date = bc_df["fiftyTwoWkLowDate"].iloc[0]
-                        fiftytwo_wk_high = bc_df["fiftyTwoWkHigh"].iloc[0]
-                        fiftytwo_wk_high_date = bc_df["fiftyTwoWkHighDate"].iloc[0]
-                        last_price = bc_df["lastPrice"].iloc[0]
+                try:                  
+                    weekly = f"https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol={symbol}&apikey={config.av_apikey}"
+                    weekly_data = pd.DataFrame(requests.get(weekly).json()['Weekly Time Series']).T
+                    weekly_data_high = weekly_data['2. high'][1]
+                    weekly_data_low = weekly_data['3. low'][1]
+                    
+                    monthly = f"https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol={symbol}&apikey={config.av_apikey}"
+                    monthly_data = pd.DataFrame(requests.get(monthly).json()['Monthly Time Series']).T
+                    monthly_data_high = monthly_data['2. high'][1]
+                    monthly_data_low = monthly_data['3. low'][1]
 
-                        valid_bc_data = True
-                        
-                        if valid_bc_data:
-                            continue
-                    except Exception as e:
-                        print(f"Error occured: {e} Sleeping for a minute")
-                        time.sleep(60)
+                except Exception as e:
+                    print(f"Error occured: {e} Sleeping for two minutes")
+                    time.sleep(120)
+                    run_bot(bot_login(), comments_replied_to)
+                
+                try:
+                    bc_url = f"https://marketdata.websol.barchart.com/getQuote.csv?apikey={config.bc_apikey}&symbols={symbol}&fields=fiftyTwoWkHigh%2CfiftyTwoWkLow%2ClastPrice%2CfiftyTwoWkHighDate%2CfiftyTwoWkLowDate"
+                    bc_df = pd.read_csv(bc_url)
+                    fiftytwo_wk_low = bc_df["fiftyTwoWkLow"].iloc[0]
+                    fiftytwo_wk_low_date = bc_df["fiftyTwoWkLowDate"].iloc[0]
+                    fiftytwo_wk_high = bc_df["fiftyTwoWkHigh"].iloc[0]
+                    fiftytwo_wk_high_date = bc_df["fiftyTwoWkHighDate"].iloc[0]
+                    last_price = bc_df["lastPrice"].iloc[0]
+
+                except Exception as e:
+                    print(f"Error occured: {e} Sleeping for two minutes")
+                    time.sleep(120)
+                    run_bot(bot_login(), comments_replied_to)
                
                 # Appending comment.id to the txt file
                 comments_replied_to.append(comment.id)
