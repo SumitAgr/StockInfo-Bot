@@ -90,6 +90,7 @@ def run_bot(bot_login_info, comments_replied_to):
                 except Exception as e:
                     print(f"Error occured: {e} Sleeping for two minutes")
                     time.sleep(120)
+                    print("Exception loop occured, running bot again")
                     run_bot(bot_login(), comments_replied_to)
                 
                 try:
@@ -104,6 +105,7 @@ def run_bot(bot_login_info, comments_replied_to):
                 except Exception as e:
                     print(f"Error occured: {e} Sleeping for two minutes")
                     time.sleep(120)
+                    print("Exception loop occured, running bot again")
                     run_bot(bot_login(), comments_replied_to)
                
                 # Appending comment.id to the txt file
